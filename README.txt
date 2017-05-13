@@ -11,3 +11,5 @@ License: GNU General Public License V3
 
 Now better than ever with optimization, multiple file support, directory handling, etc - ladyada!
 
+Just put it in Arduino/libraries folder and run examples
+
