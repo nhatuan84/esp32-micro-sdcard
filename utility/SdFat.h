@@ -42,56 +42,56 @@ class SdVolume;
 
 // flags for ls()
 /** ls() flag to print modify date */
-uint8_t const LS_DATE = 1;
+#define LS_DATE  1
 /** ls() flag to print file size */
-uint8_t const LS_SIZE = 2;
+#define LS_SIZE  2
 /** ls() flag for recursive list of subdirectories */
-uint8_t const LS_R = 4;
+#define LS_R  4
 
 // use the gnu style oflag in open()
 /** open() oflag for reading */
-uint8_t const O_READ = 0X01;
+#define O_READ  0X01
 /** open() oflag - same as O_READ */
-uint8_t const O_RDONLY = O_READ;
+#define O_RDONLY  O_READ
 /** open() oflag for write */
-uint8_t const O_WRITE = 0X02;
+#define O_WRITE  0X02
 /** open() oflag - same as O_WRITE */
-uint8_t const O_WRONLY = O_WRITE;
+#define O_WRONLY  O_WRITE
 /** open() oflag for reading and writing */
-uint8_t const O_RDWR = (O_READ | O_WRITE);
+#define O_RDWR  (O_READ | O_WRITE)
 /** open() oflag mask for access modes */
-uint8_t const O_ACCMODE = (O_READ | O_WRITE);
+#define O_ACCMODE  (O_READ | O_WRITE)
 /** The file offset shall be set to the end of the file prior to each write. */
-uint8_t const O_APPEND = 0X04;
+#define O_APPEND  0X04
 /** synchronous writes - call sync() after each write */
-uint8_t const O_SYNC = 0X08;
+#define O_SYNC  0X08
 /** create the file if nonexistent */
-uint8_t const O_CREAT = 0X10;
+#define O_CREAT  0X10
 /** If O_CREAT and O_EXCL are set, open() shall fail if the file exists */
-uint8_t const O_EXCL = 0X20;
+#define O_EXCL  0X20
 /** truncate the file to zero length */
-uint8_t const O_TRUNC = 0X40;
+#define O_TRUNC  0X40
 
 // flags for timestamp
 /** set the file's last access date */
-uint8_t const T_ACCESS = 1;
+#define T_ACCESS  1
 /** set the file's creation date and time */
-uint8_t const T_CREATE = 2;
+#define T_CREATE  2
 /** Set the file's write date and time */
-uint8_t const T_WRITE = 4;
+#define T_WRITE  4
 // values for type_
 /** This SdFile has not been opened. */
-uint8_t const FAT_FILE_TYPE_CLOSED = 0;
+#define FAT_FILE_TYPE_CLOSED  0
 /** SdFile for a file */
-uint8_t const FAT_FILE_TYPE_NORMAL = 1;
+#define FAT_FILE_TYPE_NORMAL  1
 /** SdFile for a FAT16 root directory */
-uint8_t const FAT_FILE_TYPE_ROOT16 = 2;
+#define FAT_FILE_TYPE_ROOT16  2
 /** SdFile for a FAT32 root directory */
-uint8_t const FAT_FILE_TYPE_ROOT32 = 3;
+#define FAT_FILE_TYPE_ROOT32  3
 /** SdFile for a subdirectory */
-uint8_t const FAT_FILE_TYPE_SUBDIR = 4;
+#define FAT_FILE_TYPE_SUBDIR  4
 /** Test value for directory type */
-uint8_t const FAT_FILE_TYPE_MIN_DIR = FAT_FILE_TYPE_ROOT16;
+#define FAT_FILE_TYPE_MIN_DIR  FAT_FILE_TYPE_ROOT16
 
 /** date field for FAT directory entry */
 static inline uint16_t FAT_DATE(uint16_t year, uint8_t month, uint8_t day) {
