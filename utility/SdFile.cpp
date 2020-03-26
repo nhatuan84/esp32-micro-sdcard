@@ -132,7 +132,7 @@ uint8_t SdFile::createContiguous(SdFile* dirFile,
         const char* fileName, uint32_t size) {
   // don't allow zero length file
   if (size == 0) return false;
-  if (!open(dirFile, fileName, O_CREAT | O_EXCL | O_RDWR)) return false;
+  if (!open(dirFile, fileName, F_CREAT | F_EXCL | F_RDWR)) return false;
 
   // calculate number of clusters needed
   uint32_t count = ((size - 1) >> (vol_->clusterSizeShift_ + 9)) + 1;
@@ -237,7 +237,7 @@ void SdFile::ls(uint8_t flags, uint8_t indent) {
     if ((flags & LS_R) && DIR_IS_SUBDIR(p)) {
       uint16_t index = curPosition()/32 - 1;
       SdFile s;
-      if (s.open(this, index, O_READ)) s.ls(flags, indent + 2);
+      if (s.open(this, index, F_READ)) s.ls(flags, indent + 2);
       seekSet(32 * (index + 1));
     }
   }
@@ -293,10 +293,10 @@ uint8_t SdFile::makeDir(SdFile* dir, const char* dirName) {
   dir_t d;
 
   // create a normal file
-  if (!open(dir, dirName, O_CREAT | O_EXCL | O_RDWR)) return false;
+  if (!open(dir, dirName, F_CREAT | F_EXCL | F_RDWR)) return false;
 
   // convert SdFile to directory
-  flags_ = O_READ;
+  flags_ = F_READ;
   type_ = FAT_FILE_TYPE_SUBDIR;
 
   // allocate and zero first cluster
@@ -354,30 +354,30 @@ uint8_t SdFile::makeDir(SdFile* dir, const char* dirName) {
  * \param[in] oflag Values for \a oflag are constructed by a bitwise-inclusive
  * OR of flags from the following list
  *
- * O_READ - Open for reading.
+ * F_READ - Open for reading.
  *
- * O_RDONLY - Same as O_READ.
+ * F_RDONLY - Same as F_READ.
  *
- * O_WRITE - Open for writing.
+ * F_WRITE - Open for writing.
  *
- * O_WRONLY - Same as O_WRITE.
+ * F_WRONLY - Same as F_WRITE.
  *
- * O_RDWR - Open for reading and writing.
+ * F_RDWR - Open for reading and writing.
  *
- * O_APPEND - If set, the file offset shall be set to the end of the
+ * F_APPEND - If set, the file offset shall be set to the end of the
  * file prior to each write.
  *
- * O_CREAT - If the file exists, this flag has no effect except as noted
- * under O_EXCL below. Otherwise, the file shall be created
+ * F_CREAT - If the file exists, this flag has no effect except as noted
+ * under F_EXCL below. Otherwise, the file shall be created
  *
- * O_EXCL - If O_CREAT and O_EXCL are set, open() shall fail if the file exists.
+ * F_EXCL - If F_CREAT and F_EXCL are set, open() shall fail if the file exists.
  *
- * O_SYNC - Call sync() after each write.  This flag should not be used with
+ * F_SYNC - Call sync() after each write.  This flag should not be used with
  * write(uint8_t), write_P(PGM_P), writeln_P(PGM_P), or the Arduino Print class.
  * These functions do character at a time writes so sync() will be called
  * after each byte.
  *
- * O_TRUNC - If the file exists and is a regular file, and the file is
+ * F_TRUNC - If the file exists and is a regular file, and the file is
  * successfully opened and is not read only, its length shall be truncated to 0.
  *
  * \note Directory files must be opened read only.  Write and truncation is
@@ -419,15 +419,15 @@ uint8_t SdFile::open(SdFile* dirFile, const char* fileName, uint8_t oflag) {
       // done if no entries follow
       if (p->name[0] == DIR_NAME_FREE) break;
     } else if (!memcmp(dname, p->name, 11)) {
-      // don't open existing file if O_CREAT and O_EXCL
-      if ((oflag & (O_CREAT | O_EXCL)) == (O_CREAT | O_EXCL)) return false;
+      // don't open existing file if F_CREAT and F_EXCL
+      if ((oflag & (F_CREAT | F_EXCL)) == (F_CREAT | F_EXCL)) return false;
 
       // open found file
       return openCachedEntry(0XF & index, oflag);
     }
   }
-  // only create file if O_CREAT and O_WRITE
-  if ((oflag & (O_CREAT | O_WRITE)) != (O_CREAT | O_WRITE)) return false;
+  // only create file if F_CREAT and F_WRITE
+  if ((oflag & (F_CREAT | F_WRITE)) != (F_CREAT | F_WRITE)) return false;
 
   // cache found slot or add cluster if end of file
   if (emptyFound) {
@@ -476,7 +476,7 @@ uint8_t SdFile::open(SdFile* dirFile, const char* fileName, uint8_t oflag) {
  * opened.  The value for \a index is (directory file position)/32.
  *
  * \param[in] oflag Values for \a oflag are constructed by a bitwise-inclusive
- * OR of flags O_READ, O_WRITE, O_TRUNC, and O_SYNC.
+ * OR of flags F_READ, F_WRITE, F_TRUNC, and F_SYNC.
  *
  * See open() by fileName for definition of flags and return values.
  *
@@ -485,8 +485,8 @@ uint8_t SdFile::open(SdFile* dirFile, uint16_t index, uint8_t oflag) {
   // error if already open
   if (isOpen())return false;
 
-  // don't open existing file if O_CREAT and O_EXCL - user call error
-  if ((oflag & (O_CREAT | O_EXCL)) == (O_CREAT | O_EXCL)) return false;
+  // don't open existing file if F_CREAT and F_EXCL - user call error
+  if ((oflag & (F_CREAT | F_EXCL)) == (F_CREAT | F_EXCL)) return false;
 
   vol_ = dirFile->vol_;
 
@@ -513,7 +513,7 @@ uint8_t SdFile::openCachedEntry(uint8_t dirIndex, uint8_t oflag) {
 
   // write or truncate is an error for a directory or read-only file
   if (p->attributes & (DIR_ATT_READ_ONLY | DIR_ATT_DIRECTORY)) {
-    if (oflag & (O_WRITE | O_TRUNC)) return false;
+    if (oflag & (F_WRITE | F_TRUNC)) return false;
   }
   // remember location of directory entry on SD
   dirIndex_ = dirIndex;
@@ -534,14 +534,14 @@ uint8_t SdFile::openCachedEntry(uint8_t dirIndex, uint8_t oflag) {
     return false;
   }
   // save open flags for read/write
-  flags_ = oflag & (O_ACCMODE | O_SYNC | O_APPEND);
+  flags_ = oflag & (F_ACCMODE | F_SYNC | F_APPEND);
 
   // set to start of file
   curCluster_ = 0;
   curPosition_ = 0;
 
   // truncate file to zero length if requested
-  if (oflag & O_TRUNC) return truncate(0);
+  if (oflag & F_TRUNC) return truncate(0);
   return true;
 }
 //------------------------------------------------------------------------------
@@ -573,7 +573,7 @@ uint8_t SdFile::openRoot(SdVolume* vol) {
   }
   vol_ = vol;
   // read only
-  flags_ = O_READ;
+  flags_ = F_READ;
 
   // set to start of file
   curCluster_ = 0;
@@ -669,7 +669,7 @@ int16_t SdFile::read(void* buf, uint16_t nbyte) {
   uint8_t* dst = reinterpret_cast<uint8_t*>(buf);
 
   // error if not open or write only
-  if (!isOpen() || !(flags_ & O_READ)) return -1;
+  if (!isOpen() || !(flags_ & F_READ)) return -1;
 
   // max bytes left in file
   if (nbyte > (fileSize_ - curPosition_)) nbyte = fileSize_ - curPosition_;
@@ -817,7 +817,7 @@ uint8_t SdFile::remove(void) {
  */
 uint8_t SdFile::remove(SdFile* dirFile, const char* fileName) {
   SdFile file;
-  if (!file.open(dirFile, fileName, O_WRITE)) return false;
+  if (!file.open(dirFile, fileName, F_WRITE)) return false;
   return file.remove();
 }
 //------------------------------------------------------------------------------
@@ -855,7 +855,7 @@ uint8_t SdFile::rmDir(void) {
   }
   // convert empty directory to normal file for remove
   type_ = FAT_FILE_TYPE_NORMAL;
-  flags_ |= O_WRITE;
+  flags_ |= F_WRITE;
   return remove();
 }
 //------------------------------------------------------------------------------
@@ -894,13 +894,13 @@ uint8_t SdFile::rmRfStar(void) {
     // skip if part of long file name or volume label in root
     if (!DIR_IS_FILE_OR_SUBDIR(p)) continue;
 
-    if (!f.open(this, index, O_READ)) return false;
+    if (!f.open(this, index, F_READ)) return false;
     if (f.isSubDir()) {
       // recursively delete
       if (!f.rmRfStar()) return false;
     } else {
       // ignore read-only
-      f.flags_ |= O_WRITE;
+      f.flags_ |= F_WRITE;
       if (!f.remove()) return false;
     }
     // position to next entry if required
@@ -1072,7 +1072,7 @@ uint8_t SdFile::timestamp(uint8_t flags, uint16_t year, uint8_t month,
  */
 uint8_t SdFile::truncate(uint32_t length) {
 // error if not a normal file or read-only
-  if (!isFile() || !(flags_ & O_WRITE)) return false;
+  if (!isFile() || !(flags_ & F_WRITE)) return false;
 
   // error if length is greater than current size
   if (length > fileSize_) return false;
@@ -1137,10 +1137,10 @@ size_t SdFile::write(const void* buf, uint16_t nbyte) {
   uint16_t nToWrite = nbyte;
 
   // error if not a normal file or is read-only
-  if (!isFile() || !(flags_ & O_WRITE)) goto writeErrorReturn;
+  if (!isFile() || !(flags_ & F_WRITE)) goto writeErrorReturn;
 
   // seek to end of file if append flag
-  if ((flags_ & O_APPEND) && curPosition_ != fileSize_) {
+  if ((flags_ & F_APPEND) && curPosition_ != fileSize_) {
     if (!seekEnd()) goto writeErrorReturn;
   }
 
@@ -1211,7 +1211,7 @@ size_t SdFile::write(const void* buf, uint16_t nbyte) {
     flags_ |= F_FILE_DIR_DIRTY;
   }
 
-  if (flags_ & O_SYNC) {
+  if (flags_ & F_SYNC) {
     if (!sync()) goto writeErrorReturn;
   }
   return nbyte;
