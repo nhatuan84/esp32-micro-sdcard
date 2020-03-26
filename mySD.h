@@ -26,8 +26,8 @@
 #include <utility/SdFatUtil.h>
 #include <utility/Sd2Card.h>
 
-#define FILE_READ O_READ
-#define FILE_WRITE (O_READ | O_WRITE | O_CREAT)
+#define FILE_READ F_READ
+#define FILE_WRITE (F_READ | F_WRITE | F_CREAT)
 
 class File : public Stream {
  private:
@@ -58,7 +58,7 @@ public:
   char * name();
 
   boolean isDirectory(void);
-  File openNextFile(uint8_t mode = O_RDONLY);
+  File openNextFile(uint8_t mode = F_RDONLY);
   void rewindDirectory(void);
   
   using Print::write;
