@@ -50,27 +50,27 @@ class SdVolume;
 
 // use the gnu style oflag in open()
 /** open() oflag for reading */
-#define O_READ  0X01
-/** open() oflag - same as O_READ */
-#define O_RDONLY  O_READ
+#define F_READ  0X01
+/** open() oflag - same as F_READ */
+#define F_RDONLY  F_READ
 /** open() oflag for write */
-#define O_WRITE  0X02
-/** open() oflag - same as O_WRITE */
-#define O_WRONLY  O_WRITE
+#define F_WRITE  0X02
+/** open() oflag - same as F_WRITE */
+#define F_WRONLY  F_WRITE
 /** open() oflag for reading and writing */
-#define O_RDWR  (O_READ | O_WRITE)
+#define F_RDWR  (F_READ | F_WRITE)
 /** open() oflag mask for access modes */
-#define O_ACCMODE  (O_READ | O_WRITE)
+#define F_ACCMODE  (F_READ | F_WRITE)
 /** The file offset shall be set to the end of the file prior to each write. */
-#define O_APPEND  0X04
+#define F_APPEND  0X04
 /** synchronous writes - call sync() after each write */
-#define O_SYNC  0X08
+#define F_SYNC  0X08
 /** create the file if nonexistent */
-#define O_CREAT  0X10
-/** If O_CREAT and O_EXCL are set, open() shall fail if the file exists */
-#define O_EXCL  0X20
+#define F_CREAT  0X10
+/** If F_CREAT and F_EXCL are set, open() shall fail if the file exists */
+#define F_EXCL  0X20
 /** truncate the file to zero length */
-#define O_TRUNC  0X40
+#define F_TRUNC  0X40
 
 // flags for timestamp
 /** set the file's last access date */
@@ -337,7 +337,7 @@ class SdFile : public Print {
   }
   /** \deprecated  Do not use in new apps */
   uint8_t open(SdFile& dirFile, const char* fileName) {  // NOLINT
-    return open(dirFile, fileName, O_RDWR);
+    return open(dirFile, fileName, F_RDWR);
   }
   /** \deprecated Use:
    * uint8_t SdFile::open(SdFile* dirFile, uint16_t index, uint8_t oflag);
@@ -371,7 +371,7 @@ class SdFile : public Print {
  private:
   // bits defined in flags_
   // should be 0XF
-  static uint8_t const F_OFLAG = (O_ACCMODE | O_APPEND | O_SYNC);
+  static uint8_t const F_OFLAG = (F_ACCMODE | F_APPEND | F_SYNC);
   // available bits
   static uint8_t const F_UNUSED = 0X30;
   // use unbuffered SD read
