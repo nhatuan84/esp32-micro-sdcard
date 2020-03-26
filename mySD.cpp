@@ -57,7 +57,7 @@
 #define PATH_COMPONENT_BUFFER_LEN MAX_COMPONENT_LEN+1
 
 bool getNextPathComponent(char *path, unsigned int *p_offset,
-			  char *buffer) {
+        char *buffer) {
   /*
 
     Parse individual path components from a path.
@@ -95,8 +95,8 @@ bool getNextPathComponent(char *path, unsigned int *p_offset,
   
   // Copy the next next path segment
   while (bufferOffset < MAX_COMPONENT_LEN
-	 && (path[offset] != '/')
-	 && (path[offset] != '\0')) {
+   && (path[offset] != '/')
+   && (path[offset] != '\0')) {
     buffer[bufferOffset++] = path[offset++];
   }
 
@@ -116,11 +116,11 @@ bool getNextPathComponent(char *path, unsigned int *p_offset,
 
 
 boolean walkPath(char *filepath, SdFile& parentDir,
-		 boolean (*callback)(SdFile& parentDir,
-				     char *filePathComponent,
-				     boolean isLastComponent,
-				     void *object),
-		 void *object = NULL) {
+     boolean (*callback)(SdFile& parentDir,
+             char *filePathComponent,
+             boolean isLastComponent,
+             void *object),
+     void *object = NULL) {
   /*
      
      When given a file path (and parent directory--normally root),
@@ -130,7 +130,7 @@ boolean walkPath(char *filepath, SdFile& parentDir,
 
        e.g. given the path '/foo/bar/baz'
             the callback would be called at the equivalent of
-	    '/foo', '/foo/bar' and '/foo/bar/baz'.
+      '/foo', '/foo/bar' and '/foo/bar/baz'.
 
      The implementation swaps between two different directory/file
      handles as it traverses the directories and does not use recursion
@@ -186,7 +186,7 @@ boolean walkPath(char *filepath, SdFile& parentDir,
       break;
     }
     
-    boolean exists = (*p_child).open(*p_parent, buffer, O_RDONLY);
+    boolean exists = (*p_child).open(*p_parent, buffer, F_RDONLY);
 
     // If it's one we've created then we
     // don't need the parent handle anymore.
@@ -231,7 +231,7 @@ boolean walkPath(char *filepath, SdFile& parentDir,
  */
 
 boolean callback_pathExists(SdFile& parentDir, char *filePathComponent, 
-			    boolean isLastComponent, void *object) {
+          boolean isLastComponent, void *object) {
   /*
 
     Callback used to determine if a file/directory exists in parent
@@ -242,7 +242,7 @@ boolean callback_pathExists(SdFile& parentDir, char *filePathComponent,
   */
   SdFile child;
 
-  boolean exists = child.open(parentDir, filePathComponent, O_RDONLY);
+  boolean exists = child.open(parentDir, filePathComponent, F_RDONLY);
   
   if (exists) {
      child.close(); 
@@ -254,7 +254,7 @@ boolean callback_pathExists(SdFile& parentDir, char *filePathComponent,
 
 
 boolean callback_makeDirPath(SdFile& parentDir, char *filePathComponent, 
-			     boolean isLastComponent, void *object) {
+           boolean isLastComponent, void *object) {
   /*
 
     Callback used to create a directory in the parent directory if
@@ -278,7 +278,7 @@ boolean callback_makeDirPath(SdFile& parentDir, char *filePathComponent,
   /*
 
 boolean callback_openPath(SdFile& parentDir, char *filePathComponent, 
-			  boolean isLastComponent, void *object) {
+        boolean isLastComponent, void *object) {
 
     Callback used to open a file specified by a filepath that may
     specify one or more directories above it.
@@ -309,7 +309,7 @@ boolean callback_openPath(SdFile& parentDir, char *filePathComponent,
 
 
 boolean callback_remove(SdFile& parentDir, char *filePathComponent, 
-			boolean isLastComponent, void *object) {
+      boolean isLastComponent, void *object) {
   if (isLastComponent) {
     return SdFile::remove(parentDir, filePathComponent);
   }
@@ -317,10 +317,10 @@ boolean callback_remove(SdFile& parentDir, char *filePathComponent,
 }
 
 boolean callback_rmdir(SdFile& parentDir, char *filePathComponent, 
-			boolean isLastComponent, void *object) {
+      boolean isLastComponent, void *object) {
   if (isLastComponent) {
     SdFile f;
-    if (!f.open(parentDir, filePathComponent, O_READ)) return false;
+    if (!f.open(parentDir, filePathComponent, F_READ)) return false;
     return f.rmDir();
   }
   return true;
@@ -387,7 +387,7 @@ SdFile SDClass::getParentDir(const char *filepath, int *index) {
 
     // close the subdir (we reuse them) if open
     subdir->close();
-    if (! subdir->open(parent, subdirname, O_READ)) {
+    if (! subdir->open(parent, subdirname, F_READ)) {
       // failed to open one of the subdirectories
       return SdFile();
     }
@@ -468,7 +468,7 @@ File SDClass::open(const char *filepath, uint8_t mode) {
     parentdir.close();
   }
 
-  if (mode & (O_APPEND | O_WRITE)) 
+  if (mode & (F_APPEND | F_WRITE)) 
     file.seekSet(file.fileSize());
   return File(file, filepath);
 }
