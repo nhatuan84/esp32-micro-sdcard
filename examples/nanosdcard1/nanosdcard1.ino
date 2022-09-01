@@ -20,7 +20,7 @@
 #include <SPI.h>
 #include <mySD.h>
 
-File root;
+ext::File root;
 
 // change this to match your SD shield or module;
 //     Arduino Ethernet shield: pin 4
@@ -62,12 +62,12 @@ void loop()
   // nothing happens after setup finishes.
 }
 
-void printDirectory(File dir, int numTabs) {
+void printDirectory(ext::File dir, int numTabs) {
   // Begin at the start of the directory
   dir.rewindDirectory();
   
   while(true) {
-     File entry =  dir.openNextFile();
+     ext::File entry =  dir.openNextFile();
      if (! entry) {
        // no more files
        //Serial.println("**nomorefiles**");
