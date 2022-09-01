@@ -409,7 +409,7 @@ SdFile SDClass::getParentDir(const char *filepath, int *index) {
 }
 
 
-File SDClass::open(const char *filepath, uint8_t mode) {
+ext::File SDClass::open(const char *filepath, uint8_t mode) {
   /*
 
      Open the supplied file path for reading or writing.
@@ -443,7 +443,7 @@ File SDClass::open(const char *filepath, uint8_t mode) {
 
   if (! filepath[0]) {
     // it was the directory itself!
-    return File(parentdir, "/");
+    return ext::File(parentdir, "/");
   }
 
   // Open the file itself
@@ -451,18 +451,18 @@ File SDClass::open(const char *filepath, uint8_t mode) {
 
   // failed to open a subdir!
   if (!parentdir.isOpen())
-    return File();
+    return ext::File();
 
   // there is a special case for the Root directory since its a static dir
   if (parentdir.isRoot()) {
     if ( ! file.open(root, filepath, mode)) {
       // failed to open the file :(
-      return File();
+      return ext::File();
     }
     // dont close the root!
   } else {
     if ( ! file.open(parentdir, filepath, mode)) {
-      return File();
+      return ext::File();
     }
     // close the parent
     parentdir.close();
@@ -470,7 +470,7 @@ File SDClass::open(const char *filepath, uint8_t mode) {
 
   if (mode & (F_APPEND | F_WRITE)) 
     file.seekSet(file.fileSize());
-  return File(file, filepath);
+  return ext::File(file, filepath);
 }
 
 
@@ -504,7 +504,7 @@ File SDClass::open(char *filepath, uint8_t mode) {
   fileOpenMode = mode;
   walkPath(filepath, root, callback_openPath, this);
 
-  return File();
+  return ext::File();
 
 }
 */
@@ -573,7 +573,7 @@ void SDClass::enableCRC(boolean mode) {
 
 
 // allows you to recurse into a directory
-File File::openNextFile(uint8_t mode) {
+ext::File ext::File::openNextFile(uint8_t mode) {
   dir_t p;
 
   //Serial.print("\t\treading dir...");
@@ -582,7 +582,7 @@ File File::openNextFile(uint8_t mode) {
     // done if past last used entry
     if (p.name[0] == DIR_NAME_FREE) {
       //Serial.println("end");
-      return File();
+      return ext::File();
     }
 
     // skip deleted entry and entries for . and  ..
@@ -606,18 +606,18 @@ File File::openNextFile(uint8_t mode) {
 
     if (f.open(_file, name, mode)) {
       //Serial.println("OK!");
-      return File(f, name);    
+      return ext::File(f, name);    
     } else {
       //Serial.println("ugh");
-      return File();
+      return ext::File();
     }
   }
 
   //Serial.println("nothing");
-  return File();
+  return ext::File();
 }
 
-void File::rewindDirectory(void) {  
+void ext::File::rewindDirectory(void) {  
   if (isDirectory())
     _file->rewind();
 }
